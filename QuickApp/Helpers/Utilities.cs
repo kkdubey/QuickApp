@@ -20,10 +20,8 @@ namespace QuickApp.Helpers
             if (!Directory.Exists(dirPath))
                 Directory.CreateDirectory(dirPath);
 
-            using (StreamWriter writer = File.AppendText(logPath))
-            {
-                writer.WriteLine($"{DateTime.Now} - {text}");
-            }
+            using StreamWriter writer = File.AppendText(logPath);
+            writer.WriteLine($"{DateTime.Now} - {text}");
         }
 
 

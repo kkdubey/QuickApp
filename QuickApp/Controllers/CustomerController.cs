@@ -56,7 +56,7 @@ namespace QuickApp.Controllers
         public async Task<string> Email()
         {
             string recepientName = "QickApp Tester";
-            string recepientEmail = "test@testapp.com"; 
+            string recepientEmail = "test@testapp.com";
 
             string message = EmailTemplates.GetTestEmail(recepientName, DateTime.UtcNow);
 

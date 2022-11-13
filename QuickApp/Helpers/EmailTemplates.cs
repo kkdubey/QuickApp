@@ -63,13 +63,9 @@ namespace QuickApp.Helpers
             if (!fileInfo.Exists)
                 throw new FileNotFoundException($"Template file located at \"{path}\" was not found");
 
-            using (var fs = fileInfo.CreateReadStream())
-            {
-                using (var sr = new StreamReader(fs))
-                {
-                    return sr.ReadToEnd();
-                }
-            }
+            using var fs = fileInfo.CreateReadStream();
+            using var sr = new StreamReader(fs);
+            return sr.ReadToEnd();
         }
     }
 }
