@@ -180,19 +180,13 @@ namespace DAL.Core
             string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             var result = await _userManager.ResetPasswordAsync(user, resetToken, newPassword);
-            if (!result.Succeeded)
-                return (false, result.Errors.Select(e => e.Description).ToArray());
-
-            return (true, new string[] { });
+            return !result.Succeeded ? ((bool Succeeded, string[] Errors))(false, result.Errors.Select(e => e.Description).ToArray()) : ((bool Succeeded, string[] Errors))(true, new string[] { });
         }
 
         public async Task<(bool Succeeded, string[] Errors)> UpdatePasswordAsync(ApplicationUser user, string currentPassword, string newPassword)
         {
             var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
-            if (!result.Succeeded)
-                return (false, result.Errors.Select(e => e.Description).ToArray());
-
-            return (true, new string[] { });
+            return !result.Succeeded ? ((bool Succeeded, string[] Errors))(false, result.Errors.Select(e => e.Description).ToArray()) : ((bool Succeeded, string[] Errors))(true, new string[] { });
         }
 
         public async Task<bool> CheckPasswordAsync(ApplicationUser user, string password)
@@ -224,10 +218,7 @@ namespace DAL.Core
         {
             var user = await _userManager.FindByIdAsync(userId);
 
-            if (user != null)
-                return await DeleteUserAsync(user);
-
-            return (true, new string[] { });
+            return user != null ? await DeleteUserAsync(user) : ((bool Succeeded, string[] Errors))(true, new string[] { });
         }
 
 
@@ -374,10 +365,7 @@ namespace DAL.Core
         {
             var role = await _roleManager.FindByNameAsync(roleName);
 
-            if (role != null)
-                return await DeleteRoleAsync(role);
-
-            return (true, new string[] { });
+            return role != null ? await DeleteRoleAsync(role) : ((bool Succeeded, string[] Errors))(true, new string[] { });
         }
 
 

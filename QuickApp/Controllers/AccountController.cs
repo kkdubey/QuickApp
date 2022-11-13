@@ -62,10 +62,7 @@ namespace QuickApp.Controllers
 
             UserViewModel userVM = await GetUserViewModelHelper(id);
 
-            if (userVM != null)
-                return Ok(userVM);
-            else
-                return NotFound(id);
+            return userVM != null ? Ok(userVM) : NotFound(id);
         }
 
 
@@ -77,13 +74,9 @@ namespace QuickApp.Controllers
         {
             ApplicationUser appUser = await _accountManager.GetUserByUserNameAsync(userName);
 
-            if (!(await _authorizationService.AuthorizeAsync(this.User, appUser?.Id ?? "", AccountManagementOperations.Read)).Succeeded)
-                return new ChallengeResult();
-
-            if (appUser == null)
-                return NotFound(userName);
-
-            return await GetUserById(appUser.Id);
+            return !(await _authorizationService.AuthorizeAsync(this.User, appUser?.Id ?? "", AccountManagementOperations.Read)).Succeeded
+                ? new ChallengeResult()
+                : appUser == null ? NotFound(userName) : await GetUserById(appUser.Id);
         }
 
 
@@ -185,10 +178,9 @@ namespace QuickApp.Controllers
                     {
                         if (isPasswordChanged)
                         {
-                            if (!string.IsNullOrWhiteSpace(user.CurrentPassword))
-                                result = await _accountManager.UpdatePasswordAsync(appUser, user.CurrentPassword, user.NewPassword);
-                            else
-                                result = await _accountManager.ResetPasswordAsync(appUser, user.NewPassword);
+                            result = !string.IsNullOrWhiteSpace(user.CurrentPassword)
+                                ? await _accountManager.UpdatePasswordAsync(appUser, user.CurrentPassword, user.NewPassword)
+                                : await _accountManager.ResetPasswordAsync(appUser, user.NewPassword);
                         }
 
                         if (result.Succeeded)
@@ -311,11 +303,9 @@ namespace QuickApp.Controllers
             UserViewModel userVM = await GetUserViewModelHelper(appUser.Id);
 
             var result = await _accountManager.DeleteUserAsync(appUser);
-            if (!result.Succeeded)
-                throw new Exception("The following errors occurred whilst deleting user: " + string.Join(", ", result.Errors));
-
-
-            return Ok(userVM);
+            return !result.Succeeded
+                ? throw new Exception("The following errors occurred whilst deleting user: " + string.Join(", ", result.Errors))
+                : (IActionResult)Ok(userVM);
         }
 
 
@@ -332,11 +322,9 @@ namespace QuickApp.Controllers
 
             appUser.LockoutEnd = null;
             var result = await _accountManager.UpdateUserAsync(appUser);
-            if (!result.Succeeded)
-                throw new Exception("The following errors occurred whilst unblocking user: " + string.Join(", ", result.Errors));
-
-
-            return NoContent();
+            return !result.Succeeded
+                ? throw new Exception("The following errors occurred whilst unblocking user: " + string.Join(", ", result.Errors))
+                : (IActionResult)NoContent();
         }
 
 
@@ -361,10 +349,9 @@ namespace QuickApp.Controllers
             appUser.Configuration = data;
 
             var result = await _accountManager.UpdateUserAsync(appUser);
-            if (!result.Succeeded)
-                throw new Exception("The following errors occurred whilst updating User Configurations: " + string.Join(", ", result.Errors));
-
-            return NoContent();
+            return !result.Succeeded
+                ? throw new Exception("The following errors occurred whilst updating User Configurations: " + string.Join(", ", result.Errors))
+                : (IActionResult)NoContent();
         }
 
 
@@ -379,13 +366,9 @@ namespace QuickApp.Controllers
         {
             var appRole = await _accountManager.GetRoleByIdAsync(id);
 
-            if (!(await _authorizationService.AuthorizeAsync(this.User, appRole?.Name ?? "", Authorization.Policies.ViewRoleByRoleNamePolicy)).Succeeded)
-                return new ChallengeResult();
-
-            if (appRole == null)
-                return NotFound(id);
-
-            return await GetRoleByName(appRole.Name);
+            return !(await _authorizationService.AuthorizeAsync(this.User, appRole?.Name ?? "", Authorization.Policies.ViewRoleByRoleNamePolicy)).Succeeded
+                ? new ChallengeResult()
+                : appRole == null ? NotFound(id) : await GetRoleByName(appRole.Name);
         }
 
 
@@ -401,10 +384,7 @@ namespace QuickApp.Controllers
 
             RoleViewModel roleVM = await GetRoleViewModelHelper(name);
 
-            if (roleVM == null)
-                return NotFound(name);
-
-            return Ok(roleVM);
+            return roleVM == null ? NotFound(name) : Ok(roleVM);
         }
 
 
@@ -511,11 +491,9 @@ namespace QuickApp.Controllers
             RoleViewModel roleVM = await GetRoleViewModelHelper(appRole.Name);
 
             var result = await _accountManager.DeleteRoleAsync(appRole);
-            if (!result.Succeeded)
-                throw new Exception("The following errors occurred whilst deleting role: " + string.Join(", ", result.Errors));
-
-
-            return Ok(roleVM);
+            return !result.Succeeded
+                ? throw new Exception("The following errors occurred whilst deleting role: " + string.Join(", ", result.Errors))
+                : (IActionResult)Ok(roleVM);
         }
 
 
@@ -545,11 +523,7 @@ namespace QuickApp.Controllers
         private async Task<RoleViewModel> GetRoleViewModelHelper(string roleName)
         {
             var role = await _accountManager.GetRoleLoadRelatedAsync(roleName);
-            if (role != null)
-                return _mapper.Map<RoleViewModel>(role);
-
-
-            return null;
+            return role != null ? _mapper.Map<RoleViewModel>(role) : null;
         }
 
 

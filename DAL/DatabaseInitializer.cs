@@ -92,10 +92,9 @@ namespace DAL
 
             var result = await _accountManager.CreateUserAsync(applicationUser, roles, password);
 
-            if (!result.Succeeded)
-                throw new Exception($"Seeding \"{userName}\" user failed. Errors: {string.Join(Environment.NewLine, result.Errors)}");
-
-            return applicationUser;
+            return !result.Succeeded
+                ? throw new Exception($"Seeding \"{userName}\" user failed. Errors: {string.Join(Environment.NewLine, result.Errors)}")
+                : applicationUser;
         }
 
         private async Task SeedDemoDataAsync()

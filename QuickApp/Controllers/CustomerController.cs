@@ -62,10 +62,7 @@ namespace QuickApp.Controllers
 
             (bool success, string errorMsg) = await _emailSender.SendEmailAsync(recepientName, recepientEmail, "Test Email from QuickApp", message);
 
-            if (success)
-                return "Success";
-
-            return "Error: " + errorMsg;
+            return success ? "Success" : "Error: " + errorMsg;
         }
 
 

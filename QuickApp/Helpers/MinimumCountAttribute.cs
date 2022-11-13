@@ -43,11 +43,7 @@ namespace QuickApp.Helpers
 
 
             var list = value as ICollection;
-            if (list != null)
-                return list.Count >= _minCount;
-
-
-            return false;
+            return list != null ? list.Count >= _minCount : false;
         }
 
 

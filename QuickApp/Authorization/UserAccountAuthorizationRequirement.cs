@@ -40,10 +40,7 @@ namespace QuickApp.Authorization
 
         private bool GetIsSameUser(ClaimsPrincipal user, string targetUserId)
         {
-            if (string.IsNullOrWhiteSpace(targetUserId))
-                return false;
-
-            return Utilities.GetUserId(user) == targetUserId;
+            return string.IsNullOrWhiteSpace(targetUserId) ? false : Utilities.GetUserId(user) == targetUserId;
         }
     }
 
@@ -68,10 +65,7 @@ namespace QuickApp.Authorization
 
         private bool GetIsSameUser(ClaimsPrincipal user, string targetUserId)
         {
-            if (string.IsNullOrWhiteSpace(targetUserId))
-                return false;
-
-            return Utilities.GetUserId(user) == targetUserId;
+            return string.IsNullOrWhiteSpace(targetUserId) ? false : Utilities.GetUserId(user) == targetUserId;
         }
     }
 }
